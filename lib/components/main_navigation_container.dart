@@ -27,17 +27,12 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Colors.indigo,
-        unselectedItemColor: Colors.black26,
-        backgroundColor: Color(0xFF9DD5F3),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Filters'),
-          BottomNavigationBarItem(icon: Icon(Icons.pie_chart), label: 'Stats'),
-        ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          unselectedItemColor: Colors.black26,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          ],
       ),
     );
   }

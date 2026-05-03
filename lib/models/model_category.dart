@@ -18,7 +18,6 @@ class Model_category {
       Model_category(
         name: 'Food',
         icon: (const Icon(Icons.fastfood_outlined)),
-        isSelected: true,
         color: Colors.red,
       ),
     );
@@ -48,7 +47,6 @@ class Model_category {
       Model_category(
         name: 'Salary',
         icon: (const Icon(Icons.currency_bitcoin_sharp)),
-        isSelected: true,
         color: Colors.green,
       ),
     );

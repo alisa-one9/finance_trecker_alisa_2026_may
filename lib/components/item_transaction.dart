@@ -69,7 +69,6 @@ class ItemTransaction extends StatelessWidget {
                 ),
                 Text(
                   transaction.category,
-                  style: const TextStyle(color: Colors.indigo),
                 ),
                 Text(
                   transaction.comment,
@@ -78,7 +77,6 @@ class ItemTransaction extends StatelessWidget {
               ],
             ),
           ),
-          Text("${transaction.date.day}/${transaction.date.month}"),
         ],
       ),
     );

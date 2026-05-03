@@ -21,15 +21,12 @@ class StatisticPage extends StatelessWidget {
     List<FlSpot> balanceSpots = [];
 
     double runningBalance = 0;
-    // начальный баланс: все средства за последние 10 дней
     DateTime tenDaysAgo = DateTime.now().subtract(const Duration(days: 10));
     for (var tx in transactions) {
       if (tx.date.isBefore(tenDaysAgo)) {
         runningBalance += (tx.type == 'income' ? tx.amount : -tx.amount);
       }
     }
-    //считывание  -/+   за 10 дней
-    for (int i = 10; i >= 0; i--) {
       DateTime date = DateTime.now().subtract(Duration(days: i));
 
       double dayIncome = 0;
@@ -49,7 +46,6 @@ class StatisticPage extends StatelessWidget {
       //Выясним общий текущий баланс
       // ПОСЛЕ проверки всех транзакций за день:
       runningBalance += (dayIncome - dayOutcome);
-      double x = (10 - i).toDouble();
       //добавим точки (одну точку  в день)
       incomeSpots.add(FlSpot(x, dayIncome));
       outcomeSpots.add(FlSpot(x, dayOutcome));
@@ -60,7 +56,6 @@ class StatisticPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Статистика"),
         centerTitle: true,
-        backgroundColor: Color(0xFFE2DFDF),
       ),
 
       body: SingleChildScrollView(
@@ -73,7 +68,6 @@ class StatisticPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Доходы и Расходы за 10 дней",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               Container(
@@ -96,7 +90,6 @@ class StatisticPage extends StatelessWidget {
               ]),
               const SizedBox(height: 40),
               const Text(
-                "Баланс за 10 дней",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),

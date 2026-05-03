@@ -22,7 +22,6 @@ class _AddOperationState extends State<AddOperation> {
   late List<Model_category> greenCategories;
 
   String _selectedType = 'income';
-  String _selectedCategory = 'Other';
 
   @override
   void initState() {
@@ -37,7 +36,6 @@ class _AddOperationState extends State<AddOperation> {
     final double? enteredAmount = double.tryParse(_sumController.text);
     final sumProvider = Provider.of<LocalSumProvider>(context, listen: false);
     if (enteredAmount == null || enteredAmount <= 0) {
-      _showSnackBar('Введите сумму');
       return;
     }
     if (_selectedType == 'outcome' && !sumProvider.canAfford(enteredAmount)) {
@@ -53,10 +51,10 @@ class _AddOperationState extends State<AddOperation> {
       comment: _commentController.text,
     );
     final box = Hive.box<Model_Trancaction>('transactions');
-    box.add(newTransaction);
-    sumProvider.refresh();
-    Navigator.pop(context);
-  }
+      box.add(newTransaction);
+      sumProvider.refresh();
+      Navigator.pop(context);
+    }
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(
@@ -141,14 +139,12 @@ class _AddOperationState extends State<AddOperation> {
   Widget build(BuildContext context) {
     final sumProvider = context.watch<LocalSumProvider>();
     return Scaffold(
-      appBar: AppBar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Text(
               'Доступный баланс: ${sumProvider.totalBalance} KGS',
-              style: const TextStyle(color: Colors.black12),
             ),
             const SizedBox(height: 20),
             Row(
@@ -164,8 +160,6 @@ class _AddOperationState extends State<AddOperation> {
 
             Row(
               children: [
-                const Icon(Icons.money, color: Colors.greenAccent),
-
                 Expanded(
                   child: MyTextField(
                     hintText: '0.00',
@@ -202,17 +196,12 @@ class _AddOperationState extends State<AddOperation> {
             SizedBox(
               width: double.infinity,
               height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
                   ),
-                ),
-                onPressed: makeTransaction,
-                child: const Text(
-                  "СОХРАНИТЬ",
-                  style: TextStyle(color: Colors.white),
+                  onPressed: makeTransaction,
+                  child: const Text(
+                    "СОХРАНИТЬ",
                 ),
               ),
             ),

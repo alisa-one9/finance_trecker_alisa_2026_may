@@ -13,7 +13,6 @@ class FiltersPage extends StatefulWidget {
 }
 
 class _FiltersPageState extends State<FiltersPage> {
-  String _activeFilter = 'All';
   @override
   Widget build(BuildContext context) {
     final sum_provider = Provider.of<LocalSumProvider>(context);
@@ -25,9 +24,7 @@ class _FiltersPageState extends State<FiltersPage> {
     } else {
       displayList = Hive.box<Model_Trancaction>('transactions').values.toList();
     }
-
     return Scaffold(
-      appBar: AppBar(title: const Text("Фильтр операций"), centerTitle: true),
       body: Column(
         children: [
           SingleChildScrollView(
@@ -35,12 +32,9 @@ class _FiltersPageState extends State<FiltersPage> {
             padding: const EdgeInsets.all(10),
             child: Row(
               children: [
-                _buildFilterChip('All'),
                 _buildFilterChip('Income'),
                 _buildFilterChip('Outcome'),
                 _buildFilterChip('Date'),
-                _buildFilterChip('Month'),
-                _buildFilterChip('Year'),
               ],
             ),
           ),
