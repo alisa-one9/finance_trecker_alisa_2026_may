@@ -1,11 +1,14 @@
+import 'package:finance_trecker_alisa/components/myText.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../components/myGradient.dart';
 import '../components/my_textfield.dart';
 import '../models/model_category.dart';
 import '../models/model_transaction.dart';
+import '../river_states/currencyProvider.dart';
 import '../river_states/local_sum_provider.dart';
 
 class AddOperation extends StatefulWidget {
@@ -18,10 +21,12 @@ class AddOperation extends StatefulWidget {
 class _AddOperationState extends State<AddOperation> {
   final TextEditingController _sumController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
+
   late List<Model_category> redCategories;
   late List<Model_category> greenCategories;
 
   String _selectedType = 'income';
+  String _selectedCategory = '';
 
   @override
   void initState() {
@@ -30,14 +35,22 @@ class _AddOperationState extends State<AddOperation> {
     _commentController.text = "";
     redCategories = Model_category.getRedCategories();
     greenCategories = Model_category.getGreenCategories();
+    _sumController.addListener(() {
+      setState(() {});
+    });
   }
 
   void makeTransaction() {
     final double? enteredAmount = double.tryParse(_sumController.text);
     final sumProvider = Provider.of<LocalSumProvider>(context, listen: false);
+    final currencyProv = Provider.of<CurrencyProvider>(context, listen: false);
+
     if (enteredAmount == null || enteredAmount <= 0) {
+      _showSnackBar('Введите сумму транзакции!');
       return;
     }
+    double finalTodayUsd = currencyProv.convertToUsd(enteredAmount);
+
     if (_selectedType == 'outcome' && !sumProvider.canAfford(enteredAmount)) {
       _showSnackBar('Недостаточно средств!');
       return;
@@ -49,12 +62,19 @@ class _AddOperationState extends State<AddOperation> {
       category: _selectedCategory,
       date: DateTime.now(),
       comment: _commentController.text,
+      dollarSum: finalTodayUsd,
     );
     final box = Hive.box<Model_Trancaction>('transactions');
+    if (_selectedCategory == '') {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Категория не выбрана!')));
+    } else {
       box.add(newTransaction);
       sumProvider.refresh();
       Navigator.pop(context);
     }
+  }
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(
@@ -109,7 +129,7 @@ class _AddOperationState extends State<AddOperation> {
                     shape: BoxShape.circle,
                     color:
                         item.isSelected
-                            ? themeColor.withOpacity(0.4)
+                            ? themeColor.withValues()
                             : Colors.white,
                     border: Border.all(
                       color: themeColor,
@@ -137,14 +157,35 @@ class _AddOperationState extends State<AddOperation> {
 
   @override
   Widget build(BuildContext context) {
+    final currencyProv = context.watch<CurrencyProvider>();
     final sumProvider = context.watch<LocalSumProvider>();
+
+    double kgs = double.tryParse(_sumController.text) ?? 0.0;
+    double displayUsd = currencyProv.convertToUsd(kgs);
+
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "USD currency: ${currencyProv.dollarCourse.toStringAsFixed(2)} KGS",
+          style: TextStyle(fontSize: 14),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: myGradient),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Text(
               'Доступный баланс: ${sumProvider.totalBalance} KGS',
+              style: const TextStyle(
+                color: Colors.indigo,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 20),
             Row(
@@ -160,6 +201,7 @@ class _AddOperationState extends State<AddOperation> {
 
             Row(
               children: [
+                const Text('KGS', style: TextStyle(fontSize: 14)),
                 Expanded(
                   child: MyTextField(
                     hintText: '0.00',
@@ -167,6 +209,17 @@ class _AddOperationState extends State<AddOperation> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                const Text('USD', style: TextStyle(fontSize: 14)),
+                Expanded(
+                  child: MyText(
+                    text: displayUsd.toStringAsFixed(2),
+                    textColor: Colors.cyan,
                   ),
                 ),
               ],
@@ -196,12 +249,22 @@ class _AddOperationState extends State<AddOperation> {
             SizedBox(
               width: double.infinity,
               height: 50,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: myGradient,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
                   ),
                   onPressed: makeTransaction,
                   child: const Text(
                     "СОХРАНИТЬ",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:finance_trecker_alisa/components/myGradient.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ class FiltersPage extends StatefulWidget {
 }
 
 class _FiltersPageState extends State<FiltersPage> {
+  String _activeFilter = 'outcome';
   @override
   Widget build(BuildContext context) {
     final sum_provider = Provider.of<LocalSumProvider>(context);
@@ -24,7 +26,17 @@ class _FiltersPageState extends State<FiltersPage> {
     } else {
       displayList = Hive.box<Model_Trancaction>('transactions').values.toList();
     }
+
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Фильтр операций"),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: myGradient),
+        ),
+      ),
       body: Column(
         children: [
           SingleChildScrollView(

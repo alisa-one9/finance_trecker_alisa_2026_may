@@ -19,6 +19,7 @@ class Model_category {
         name: 'Food',
         icon: (const Icon(Icons.fastfood_outlined)),
         color: Colors.red,
+        isSelected: false,
       ),
     );
     redCategories.add(
@@ -48,6 +49,7 @@ class Model_category {
         name: 'Salary',
         icon: (const Icon(Icons.currency_bitcoin_sharp)),
         color: Colors.green,
+        isSelected: false,
       ),
     );
     greenCategories.add(

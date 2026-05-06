@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../components/deleteAlertDialog.dart';
 import '../components/item_transaction.dart';
+import '../components/myGradient.dart';
 import '../models/model_transaction.dart';
 
 class HomeSreen extends StatefulWidget {
@@ -38,7 +40,13 @@ class _HomeSreenState extends State<HomeSreen> {
 
         return Scaffold(
           appBar: AppBar(
+            title: const Text('My Wallet'),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             centerTitle: true,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(gradient: myGradient),
+            ),
           ),
           body: Column(
             children: [
@@ -61,13 +69,35 @@ class _HomeSreenState extends State<HomeSreen> {
                 child: ListView.builder(
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
+                    return GestureDetector(
+                      child: ItemTransaction(transaction: transactions[index]),
+
+                      onTap: () {
+                        deleteAcceptDialog(
+                          context: context,
+                          modelTrancaction: transactions[index],
+                        );
+                      },
+                    );
                   },
                 ),
               ),
             ],
           ),
+
+          floatingActionButton: Container(
+            decoration: const BoxDecoration(
+              gradient: myGradient,
+              borderRadius: BorderRadius.all(Radius.circular(60)),
+            ),
+            child: FloatingActionButton(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              child: const Icon(Icons.add, color: Colors.black),
               onPressed: () {
+                Navigator.pushNamed(context, '/add_operation');
               },
+            ),
           ),
         );
       },
