@@ -1,3 +1,4 @@
+import 'package:finance_trecker_alisa/river_states/currencyProvider.dart';
 import 'package:finance_trecker_alisa/river_states/local_sum_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -14,7 +15,10 @@ void main() async {
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => LocalSumProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => LocalSumProvider()),
+        ChangeNotifierProvider(create: (_) => CurrencyProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -27,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppNavigation.home,
+      initialRoute: AppNavigation.splash,
       onGenerateRoute: AppNavigation.generateRoute,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

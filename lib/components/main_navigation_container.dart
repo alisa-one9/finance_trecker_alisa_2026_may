@@ -1,3 +1,4 @@
+import 'package:finance_trecker_alisa/components/myGradient.dart';
 import 'package:flutter/material.dart';
 
 import '../ui/filters_page.dart' show FiltersPage;
@@ -27,12 +28,29 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(gradient: myGradient),
+        child: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
+          selectedItemColor: Colors.black87,
           unselectedItemColor: Colors.black26,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt),
+              label: 'Filters',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.pie_chart),
+              label: 'Stats',
+            ),
           ],
+        ),
       ),
     );
   }

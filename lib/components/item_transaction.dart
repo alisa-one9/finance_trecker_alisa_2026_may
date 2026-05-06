@@ -32,6 +32,7 @@ class ItemTransaction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isIncome = transaction.type == 'income';
+    String textDollarsSum = transaction.dollarSum.toStringAsFixed(2);
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -39,9 +40,7 @@ class ItemTransaction extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 5),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(), blurRadius: 5)],
       ),
       child: Row(
         children: [
@@ -67,8 +66,20 @@ class ItemTransaction extends StatelessWidget {
                   "${isIncome ? '+' : '-'} ${transaction.amount} KGS",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  "${isIncome ? '+' : '-'} ${textDollarsSum} USD",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.cyan,
+                  ),
+                ),
                 Text(
                   transaction.category,
+                  style: const TextStyle(
+                    color: Colors.indigo,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   transaction.comment,
@@ -76,6 +87,9 @@ class ItemTransaction extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          Text(
+            "${transaction.date.day}/${transaction.date.month.toString().padLeft(2, '0')}/${transaction.date.year}",
           ),
         ],
       ),

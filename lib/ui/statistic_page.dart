@@ -1,3 +1,4 @@
+import 'package:finance_trecker_alisa/components/myGradient.dart';
 import 'package:finance_trecker_alisa/models/model_transaction.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +22,15 @@ class StatisticPage extends StatelessWidget {
     List<FlSpot> balanceSpots = [];
 
     double runningBalance = 0;
+    // начальный баланс: все средства за последние 30 дней
     DateTime tenDaysAgo = DateTime.now().subtract(const Duration(days: 10));
     for (var tx in transactions) {
       if (tx.date.isBefore(tenDaysAgo)) {
         runningBalance += (tx.type == 'income' ? tx.amount : -tx.amount);
       }
     }
+    //считывание  -/+   за 30 дней
+    for (int i = 30; i >= 0; i--) {
       DateTime date = DateTime.now().subtract(Duration(days: i));
 
       double dayIncome = 0;
@@ -46,6 +50,7 @@ class StatisticPage extends StatelessWidget {
       //Выясним общий текущий баланс
       // ПОСЛЕ проверки всех транзакций за день:
       runningBalance += (dayIncome - dayOutcome);
+      double x = (30 - i).toDouble();
       //добавим точки (одну точку  в день)
       incomeSpots.add(FlSpot(x, dayIncome));
       outcomeSpots.add(FlSpot(x, dayOutcome));
@@ -56,6 +61,11 @@ class StatisticPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Статистика"),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: myGradient),
+        ),
       ),
 
       body: SingleChildScrollView(
@@ -68,6 +78,7 @@ class StatisticPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
+                "Доходы и Расходы за 30 дней",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               Container(
@@ -90,6 +101,7 @@ class StatisticPage extends StatelessWidget {
               ]),
               const SizedBox(height: 40),
               const Text(
+                "Баланс за 30 дней",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
@@ -143,7 +155,7 @@ class StatisticPage extends StatelessWidget {
       color: color,
       barWidth: isBold ? 4 : 2,
       dotData: const FlDotData(show: true),
-      belowBarData: BarAreaData(show: isBold, color: color.withOpacity(0.1)),
+      belowBarData: BarAreaData(show: isBold, color: color.withValues()),
     );
   }
 

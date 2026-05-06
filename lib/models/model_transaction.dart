@@ -21,6 +21,10 @@ class Model_Trancaction extends HiveObject {
 
   @HiveField(5)
   String comment;
+
+  @HiveField(6)
+  double dollarSum;
+
   Model_Trancaction({
     required this.id,
     required this.type,
@@ -28,5 +32,6 @@ class Model_Trancaction extends HiveObject {
     required this.category,
     required this.date,
     required this.comment,
+    required this.dollarSum,
   });
 }
