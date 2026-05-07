@@ -44,18 +44,21 @@ class _AddOperationState extends State<AddOperation> {
     final double? enteredAmount = double.tryParse(_sumController.text);
     final sumProvider = Provider.of<LocalSumProvider>(context, listen: false);
     final currencyProv = Provider.of<CurrencyProvider>(context, listen: false);
-
+    if (_selectedCategory == '') {
+      _showSnackBar('Категория не выбрана!');
+      return;
+    }
     if (enteredAmount == null || enteredAmount <= 0) {
       _showSnackBar('Введите сумму транзакции!');
       return;
     }
-    double finalTodayUsd = currencyProv.convertToUsd(enteredAmount);
 
-    if (_selectedType == 'outcome' && !sumProvider.canAfford(enteredAmount)) {
-      _showSnackBar('Недостаточно средств!');
-      return;
-    }
-    final newTransaction = Model_Trancaction(
+    double finalTodayUsd = currencyProv.convertToUsd(enteredAmount);
+    double newBalance =
+        sumProvider.real_totalBalance +
+        (_selectedType == 'income' ? enteredAmount : -enteredAmount);
+
+    final transactionForList = Model_Trancaction(
       id: Uuid().v4(),
       type: _selectedType,
       amount: enteredAmount,
@@ -63,17 +66,24 @@ class _AddOperationState extends State<AddOperation> {
       date: DateTime.now(),
       comment: _commentController.text,
       dollarSum: finalTodayUsd,
+      balanceAtPoint: newBalance,
     );
-    final box = Hive.box<Model_Trancaction>('transactions');
-    if (_selectedCategory == '') {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Категория не выбрана!')));
-    } else {
-      box.add(newTransaction);
-      sumProvider.refresh();
-      Navigator.pop(context);
-    }
+    final transactionForHistory = Model_Trancaction(
+      id: transactionForList.id, // Same ID
+      type: transactionForList.type,
+      amount: transactionForList.amount,
+      category: transactionForList.category,
+      date: transactionForList.date,
+      comment: transactionForList.comment,
+      dollarSum: transactionForList.dollarSum,
+      balanceAtPoint: transactionForList.balanceAtPoint,
+    );
+
+    Hive.box<Model_Trancaction>('transactions').add(transactionForList);
+    Hive.box<Model_Trancaction>('history').add(transactionForHistory);
+
+    sumProvider.refresh();
+    Navigator.pop(context);
   }
 
   void _showSnackBar(String message) {
@@ -181,7 +191,7 @@ class _AddOperationState extends State<AddOperation> {
         child: Column(
           children: [
             Text(
-              'Доступный баланс: ${sumProvider.totalBalance} KGS',
+              'Доступный баланс: ${sumProvider.real_totalBalance} KGS',
               style: const TextStyle(
                 color: Colors.indigo,
                 fontWeight: FontWeight.bold,

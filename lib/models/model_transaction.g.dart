@@ -24,13 +24,14 @@ class ModelTrancactionAdapter extends TypeAdapter<Model_Trancaction> {
       date: fields[4] as DateTime,
       comment: fields[5] as String,
       dollarSum: fields[6] as double,
+      balanceAtPoint: fields[7] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Model_Trancaction obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class ModelTrancactionAdapter extends TypeAdapter<Model_Trancaction> {
       ..writeByte(5)
       ..write(obj.comment)
       ..writeByte(6)
-      ..write(obj.dollarSum);
+      ..write(obj.dollarSum)
+      ..writeByte(7)
+      ..write(obj.balanceAtPoint);
   }
 
   @override

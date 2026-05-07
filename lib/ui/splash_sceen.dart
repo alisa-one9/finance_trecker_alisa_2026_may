@@ -28,6 +28,7 @@ class _SplashPageState extends State<SplashPage> {
   void _navigateToNext() {
     Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
+      print('Splash: Navigating now');
       Navigator.pushNamedAndRemoveUntil(
         context,
         AppNavigation.home,

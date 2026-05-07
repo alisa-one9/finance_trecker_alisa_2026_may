@@ -12,6 +12,7 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(ModelTrancactionAdapter());
   await Hive.openBox<Model_Trancaction>('transactions');
+  await Hive.openBox<Model_Trancaction>('history');
 
   runApp(
     MultiProvider(

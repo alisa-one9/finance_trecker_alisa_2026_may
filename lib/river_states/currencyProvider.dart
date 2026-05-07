@@ -23,8 +23,8 @@ class CurrencyProvider with ChangeNotifier {
     } catch (e) {
       _errorMessage = e.toString();
       // значение на всякий случай, чтобы не ломалось когда данные ноль
-      if (_dollarCourse == 0.0) _dollarCourse = 89.0;
-      print("CurrencyProvider Error: $e");
+      _dollarCourse = 89.0;
+      print("CurrencyProvider Error: $_errorMessage");
     } finally {
       _isLoading = false;
       notifyListeners();

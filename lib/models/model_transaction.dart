@@ -25,6 +25,9 @@ class Model_Trancaction extends HiveObject {
   @HiveField(6)
   double dollarSum;
 
+  @HiveField(7)
+  double? balanceAtPoint;
+
   Model_Trancaction({
     required this.id,
     required this.type,
@@ -33,5 +36,6 @@ class Model_Trancaction extends HiveObject {
     required this.date,
     required this.comment,
     required this.dollarSum,
+    this.balanceAtPoint,
   });
 }
