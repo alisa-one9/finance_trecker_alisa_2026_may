@@ -1,10 +1,6 @@
 import 'package:finance_trecker_alisa/app_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
-
-import '../river_states/currencyProvider.dart';
-import '../services/dollarApiService.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -14,20 +10,16 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  DollarApiService dollarApiService = DollarApiService();
-  double dollarCourse = 0.0;
-  bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    context.read<CurrencyProvider>().fetchCurrency();
     _navigateToNext();
   }
 
   void _navigateToNext() {
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
+
       Navigator.pushNamedAndRemoveUntil(
         context,
         AppNavigation.home,

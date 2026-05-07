@@ -3,40 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 class LocalSumProvider with ChangeNotifier {
-  final _box = Hive.box<Model_Trancaction>('transactions');
-  double get totalBalance {
-    double total = 0.0;
-    for (var transaction in _box.values) {
-      if (transaction.type == 'income') {
-        total += transaction.amount;
-      } else {
-        if (total < 0 || total < transaction!.amount) {
+  double get real_totalBalance {
+    try {
+      final historyBox = Hive.box<Model_Trancaction>('history');
+      print("Items in history box: ${historyBox.length}");
+
+      double total = 0.0;
+      for (var item in historyBox.values) {
+        if (item.type == 'income') {
+          total += item.amount;
         } else {
-          total -= transaction.amount;
+          total -= item.amount;
         }
       }
+      return total;
+    } catch (e) {
+      print("Error in balance calculation: $e");
+      return 0.0;
     }
-    return total;
   }
 
-  Future<List<Model_Trancaction>> sortCategoryListTransactions(
-    String categoryName,
-  ) async {
-    return _box.values.where((item) => item.category == categoryName).toList();
-    ;
-  }
-
-  List<Model_Trancaction> sortMonthListTransactions(int month) {
-    return _box.values
-        .where(
-          (item) =>
-              item.date.month == month && item.date.year == DateTime.now().year,
-        )
-        .toList();
+  List<Model_Trancaction> sortCategoryListTransactions(String categoryName) {
+    final box = Hive.box<Model_Trancaction>('history');
+    return box.values.where((item) => item.category == categoryName).toList();
   }
 
   List<Model_Trancaction> sortDateListTransactions(DateTime date) {
-    return _box.values
+    final box = Hive.box<Model_Trancaction>('history');
+    return box.values
         .where(
           (item) =>
               item.date.day == date.day &&
@@ -47,17 +41,15 @@ class LocalSumProvider with ChangeNotifier {
   }
 
   List<Model_Trancaction> sortTypeTransactions(String type) {
-    return _box.values.where((item) => item.type == type).toList();
+    final box = Hive.box<Model_Trancaction>('history');
+    return box.values.where((item) => item.type == type).toList();
   }
 
-  List<Model_Trancaction> sortListYearTransactions(int year) {
-    return _box.values.where((item) => item.date.year == year).toList();
-  }
+  List<Model_Trancaction> sortQuerySearchList(String query) {
+    final box = Hive.box<Model_Trancaction>('history');
+    if (query.isEmpty) return box.values.toList();
 
-  List<Model_Trancaction> querySearchListCommentTransactions(String query) {
-    if (query.isEmpty) return _box.values.toList();
-
-    return _box.values
+    return box.values
         .where(
           (item) => item.comment.toLowerCase().contains(query.toLowerCase()),
         )
@@ -65,7 +57,7 @@ class LocalSumProvider with ChangeNotifier {
   }
 
   bool canAfford(double amount) {
-    return totalBalance >= amount;
+    return real_totalBalance >= amount;
   }
 
   void refresh() {

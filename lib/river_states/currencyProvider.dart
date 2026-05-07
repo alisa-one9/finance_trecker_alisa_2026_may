@@ -5,26 +5,22 @@ import '../services/dollarApiService.dart';
 class CurrencyProvider with ChangeNotifier {
   double _dollarCourse = 0.0;
   bool _isLoading = true;
-  String _errorMessage = '';
-
   double get dollarCourse => _dollarCourse;
   bool get isLoading => _isLoading;
-  String get errorMessage => _errorMessage;
 
   Future<void> fetchCurrency() async {
+    if (_dollarCourse != 0.0 && _dollarCourse != 89.0) return;
     _isLoading = true;
-    _errorMessage = '';
     notifyListeners();
-
     try {
       final apiService = DollarApiService();
-      final course = await apiService.getDollarCourse();
-      _dollarCourse = course;
+      _dollarCourse = await apiService.getDollarCourse();
+      print("Currency updated successfully: $_dollarCourse");
     } catch (e) {
-      _errorMessage = e.toString();
-      // значение на всякий случай, чтобы не ломалось когда данные ноль
+      print("Используем резервный курс, так как API недоступен: $e");
+      // значение на  случай, чтобы не ломалось,
+      // когда лимит в месяц на сайте fx.kg закончился и данные не приходят
       if (_dollarCourse == 0.0) _dollarCourse = 89.0;
-      print("CurrencyProvider Error: $e");
     } finally {
       _isLoading = false;
       notifyListeners();

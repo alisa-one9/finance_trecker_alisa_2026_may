@@ -35,27 +35,46 @@ class _AddOperationState extends State<AddOperation> {
     _commentController.text = "";
     redCategories = Model_category.getRedCategories();
     greenCategories = Model_category.getGreenCategories();
+    Future.microtask(() {
+      context.read<CurrencyProvider>().fetchCurrency();
+    });
     _sumController.addListener(() {
+      setState(() {});
+    });
+    _commentController.addListener(() {
       setState(() {});
     });
   }
 
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   void makeTransaction() {
-    final double? enteredAmount = double.tryParse(_sumController.text);
+    late double newBalance;
+    final double? enteredAmount = double.tryParse(_sumController.text) ?? 0.0;
     final sumProvider = Provider.of<LocalSumProvider>(context, listen: false);
     final currencyProv = Provider.of<CurrencyProvider>(context, listen: false);
-
-    if (enteredAmount == null || enteredAmount <= 0) {
+    if (_selectedCategory == '') {
+      _showSnackBar('Категория не выбрана!');
+      return;
+    }
+    if (enteredAmount == null || enteredAmount <= 0.0) {
       _showSnackBar('Введите сумму транзакции!');
       return;
     }
     double finalTodayUsd = currencyProv.convertToUsd(enteredAmount);
-
-    if (_selectedType == 'outcome' && !sumProvider.canAfford(enteredAmount)) {
-      _showSnackBar('Недостаточно средств!');
+    if (sumProvider.real_totalBalance <= enteredAmount) {
+      _showSnackBar('Недостаточно средств для совершения транзакции!');
       return;
+    } else {
+      newBalance =
+          sumProvider.real_totalBalance +
+          (_selectedType == 'income' ? enteredAmount : -enteredAmount);
     }
-    final newTransaction = Model_Trancaction(
+    final transactionForList = Model_Trancaction(
       id: Uuid().v4(),
       type: _selectedType,
       amount: enteredAmount,
@@ -63,23 +82,27 @@ class _AddOperationState extends State<AddOperation> {
       date: DateTime.now(),
       comment: _commentController.text,
       dollarSum: finalTodayUsd,
+      balanceAtPoint: newBalance,
     );
-    final box = Hive.box<Model_Trancaction>('transactions');
-    if (_selectedCategory == '') {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Категория не выбрана!')));
+    final transactionForHistory = Model_Trancaction(
+      id: transactionForList.id,
+      type: transactionForList.type,
+      amount: transactionForList.amount,
+      category: transactionForList.category,
+      date: transactionForList.date,
+      comment: transactionForList.comment,
+      dollarSum: transactionForList.dollarSum,
+      balanceAtPoint: transactionForList.balanceAtPoint,
+    );
+    if (!(sumProvider.canAfford(enteredAmount) == true) &&
+        _selectedType == 'outcome') {
+      _showSnackBar('Недостаточно средств для совершения транзакции!');
     } else {
-      box.add(newTransaction);
+      Hive.box<Model_Trancaction>('transactions').add(transactionForList);
+      Hive.box<Model_Trancaction>('history').add(transactionForHistory);
       sumProvider.refresh();
-      Navigator.pop(context);
     }
-  }
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    Navigator.pop(context);
   }
 
   Widget _buildFilterChip(String label, String type) {
@@ -165,10 +188,16 @@ class _AddOperationState extends State<AddOperation> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "USD currency: ${currencyProv.dollarCourse.toStringAsFixed(2)} KGS",
-          style: TextStyle(fontSize: 14),
-        ),
+        title:
+            currencyProv.isLoading
+                ? const Text(
+                  "Fetching currency...",
+                  style: TextStyle(fontSize: 14),
+                )
+                : Text(
+                  "USD currency: ${currencyProv.dollarCourse.toStringAsFixed(2)} KGS",
+                  style: TextStyle(fontSize: 14),
+                ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -181,7 +210,7 @@ class _AddOperationState extends State<AddOperation> {
         child: Column(
           children: [
             Text(
-              'Доступный баланс: ${sumProvider.totalBalance} KGS',
+              'Доступный баланс: ${sumProvider.real_totalBalance} KGS',
               style: const TextStyle(
                 color: Colors.indigo,
                 fontWeight: FontWeight.bold,
@@ -217,10 +246,19 @@ class _AddOperationState extends State<AddOperation> {
               children: [
                 const Text('USD', style: TextStyle(fontSize: 14)),
                 Expanded(
-                  child: MyText(
-                    text: displayUsd.toStringAsFixed(2),
-                    textColor: Colors.cyan,
-                  ),
+                  child:
+                      currencyProv.isLoading
+                          ? const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                          : MyText(
+                            text: displayUsd.toStringAsFixed(2),
+                            textColor: Colors.cyan,
+                          ),
                 ),
               ],
             ),
@@ -243,11 +281,10 @@ class _AddOperationState extends State<AddOperation> {
             _selectedType == 'income'
                 ? _buildCategoryList(greenCategories, Colors.green)
                 : _buildCategoryList(redCategories, Colors.red),
-
             const SizedBox(height: 30),
 
             SizedBox(
-              width: double.infinity,
+              width: 400,
               height: 50,
               child: Container(
                 decoration: BoxDecoration(

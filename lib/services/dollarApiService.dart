@@ -11,13 +11,24 @@ class DollarApiService {
         options: Options(
           headers: {
             'Authorization':
-                "Bearer LvNTShPFtVy4MyEhMZbWk8QCgh6QBrEr1OgXG1592106899d",
+                "Bearer e4tDEM8q6o8VhfjnsGPcrJS4LnsUVu8heTeBVgk7e46b31ac",
           },
         ),
       );
-      return double.parse(response.data['buy_usd'].toString());
+      var rawValue = response.data['buy_usd'] ?? response.data['average_buy'];
+      if (rawValue != null) {
+        return double.tryParse(rawValue.toString()) ?? 0.0;
+      } else {
+        throw Exception("USD key not found in response");
+      }
+    } on DioException catch (e) {
+      print("Network Error: ${e.message}");
+      print("Status Code: ${e.response?.statusCode}");
+      print("Error Data: ${e.response?.data}");
+      rethrow;
     } catch (e) {
-      throw Exception("Failed to load currency: $e");
+      print("Parsing Error: $e");
+      rethrow;
     }
   }
 }

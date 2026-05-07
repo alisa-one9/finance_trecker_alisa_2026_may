@@ -9,24 +9,32 @@ import 'models/model_transaction.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  Hive.registerAdapter(ModelTrancactionAdapter());
-  await Hive.openBox<Model_Trancaction>('transactions');
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => LocalSumProvider()),
-        ChangeNotifierProvider(create: (_) => CurrencyProvider()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  try {
+    await Hive.initFlutter();
+    Hive.registerAdapter(ModelTrancactionAdapter());
+    await Hive.openBox<Model_Trancaction>('transactions');
+    await Hive.openBox<Model_Trancaction>('history');
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => LocalSumProvider()),
+          ChangeNotifierProvider(create: (_) => CurrencyProvider()),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  } catch (e) {
+    print("Initialization Error: $e");
+    runApp(
+      MaterialApp(
+        home: Scaffold(body: Center(child: Text("Restart the App please! $e"))),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

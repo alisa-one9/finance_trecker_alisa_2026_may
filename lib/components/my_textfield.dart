@@ -4,14 +4,12 @@ class MyTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final TextInputType keyboardType;
-
   const MyTextField({
     super.key,
     required this.hintText,
     required this.controller,
     this.keyboardType = TextInputType.text,
   });
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,7 +18,6 @@ class MyTextField extends StatelessWidget {
         controller: controller,
         cursorColor: Colors.black,
         keyboardType: keyboardType ?? TextInputType.text,
-
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.grey),
