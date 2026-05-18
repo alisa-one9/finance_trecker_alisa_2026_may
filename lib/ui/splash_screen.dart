@@ -1,5 +1,5 @@
-import 'package:finance_trecker_alisa/app_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashPage extends StatefulWidget {
@@ -16,22 +16,24 @@ class _SplashPageState extends State<SplashPage> {
     _navigateToNext();
   }
 
-  void _navigateToNext() {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return;
+  void _navigateToNext() async {
+    final storage = const FlutterSecureStorage();
+    String? savedPin = await storage.read(key: 'user_pin');
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppNavigation.home,
-        (route) => false,
-      );
-    });
+    await Future.delayed(Duration(seconds: 2));
+    if (!mounted) return;
+
+    if (savedPin == null) {
+      Navigator.pushReplacementNamed(context, '/register');
+    } else {
+      Navigator.pushReplacementNamed(context, '/enter_code');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFEFF6C0),
+      backgroundColor: Color(0xFF6EC8ED),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -39,7 +41,6 @@ class _SplashPageState extends State<SplashPage> {
             SizedBox(
               width: 400,
               height: 400,
-
               child: Lottie.asset('assets/lotties/bitcoin_trade.json'),
             ),
 

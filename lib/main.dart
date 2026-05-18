@@ -1,10 +1,12 @@
 import 'package:finance_trecker_alisa/river_states/currencyProvider.dart';
 import 'package:finance_trecker_alisa/river_states/local_sum_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'app_navigation.dart';
+import 'enter_logic/enter_cubit/enter_auth_cubit.dart';
 import 'models/model_transaction.dart';
 
 void main() async {
@@ -15,12 +17,15 @@ void main() async {
     await Hive.openBox<Model_Trancaction>('transactions');
     await Hive.openBox<Model_Trancaction>('history');
     runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => LocalSumProvider()),
-          ChangeNotifierProvider(create: (_) => CurrencyProvider()),
-        ],
-        child: const MyApp(),
+      MultiBlocProvider(
+        providers: [BlocProvider(create: (_) => EnterAuthCubit())],
+        child: MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => LocalSumProvider()),
+            ChangeNotifierProvider(create: (_) => CurrencyProvider()),
+          ],
+          child: const MyApp(),
+        ),
       ),
     );
   } catch (e) {

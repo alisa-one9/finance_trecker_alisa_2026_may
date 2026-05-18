@@ -59,9 +59,12 @@ class _MainNavigationContainerState extends State<MainNavigationContainer>
           backgroundColor: Colors.transparent,
           elevation: 0,
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.green,
+          selectedItemColor: Color(0xFF131050),
           unselectedItemColor: Colors.white,
-          selectedIconTheme: const IconThemeData(size: 28, color: Colors.green),
+          selectedIconTheme: const IconThemeData(
+            size: 28,
+            color: Color(0xFF131050),
+          ),
           unselectedIconTheme: const IconThemeData(
             size: 24,
             color: Colors.white,

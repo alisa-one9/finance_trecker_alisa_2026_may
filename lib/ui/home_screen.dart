@@ -41,6 +41,7 @@ class _HomeSreenState extends State<HomeSreen> {
   Widget build(BuildContext context) {
     final sumProvider = context.watch<LocalSumProvider>();
     final real_balance = sumProvider.real_totalBalance;
+
     return ValueListenableBuilder(
       valueListenable: transactionBox.listenable(),
       builder: (context, Box<Model_Trancaction> box, _) {
@@ -80,39 +81,40 @@ class _HomeSreenState extends State<HomeSreen> {
                   ),
                 ),
               ),
-              transactions.isEmpty
-                  ? const SliverFillRemaining(
-                    child: Center(child: Text("No transactions yet")),
-                  )
-                  : SliverList.builder(
-                    itemCount: transactions.length,
-                    itemBuilder: (context, index) {
-                      final tx = transactions[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8.0,
+              if (transactions.isEmpty)
+                const SliverFillRemaining(
+                  child: Center(child: Text("No transactions yet")),
+                )
+              else
+                SliverList.builder(
+                  itemCount: transactions.length,
+                  itemBuilder: (context, index) {
+                    final tx = transactions[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      child: Material(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        clipBehavior: Clip.antiAlias,
+                        elevation: 1,
+                        child: InkWell(
+                          splashColor: Colors.cyanAccent.withOpacity(0.1),
+                          highlightColor: Colors.cyanAccent.withOpacity(0.7),
+                          onTap: () {
+                            deleteAcceptDialog(
+                              context: context,
+                              modelTrancaction: tx,
+                            );
+                          },
+                          child: ItemTransaction(transaction: tx),
                         ),
-                        child: Material(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 1,
-                          child: InkWell(
-                            splashColor: Colors.yellowAccent.withOpacity(0.7),
-                            highlightColor: Colors.green.withOpacity(0.5),
-                            onTap: () {
-                              deleteAcceptDialog(
-                                context: context,
-                                modelTrancaction: tx,
-                              );
-                            },
-                            child: ItemTransaction(transaction: tx),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
+                ),
 
               const SliverToBoxAdapter(child: SizedBox(height: 80)),
             ],

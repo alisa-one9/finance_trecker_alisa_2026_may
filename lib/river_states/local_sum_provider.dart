@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 class LocalSumProvider with ChangeNotifier {
+  final Box<Model_Trancaction> _historyBox = Hive.box<Model_Trancaction>(
+    'history',
+  );
+
   double get real_totalBalance {
     try {
-      final historyBox = Hive.box<Model_Trancaction>('history');
-      print("Items in history box: ${historyBox.length}");
+      print("Items in history box: ${_historyBox.length}");
 
       double total = 0.0;
-      for (var item in historyBox.values) {
+      for (var item in _historyBox.values) {
         if (item.type == 'income') {
           total += item.amount;
         } else {
@@ -24,13 +27,13 @@ class LocalSumProvider with ChangeNotifier {
   }
 
   List<Model_Trancaction> sortCategoryListTransactions(String categoryName) {
-    final box = Hive.box<Model_Trancaction>('history');
-    return box.values.where((item) => item.category == categoryName).toList();
+    return _historyBox.values
+        .where((item) => item.category == categoryName)
+        .toList();
   }
 
   List<Model_Trancaction> sortDateListTransactions(DateTime date) {
-    final box = Hive.box<Model_Trancaction>('history');
-    return box.values
+    return _historyBox.values
         .where(
           (item) =>
               item.date.day == date.day &&
@@ -41,15 +44,13 @@ class LocalSumProvider with ChangeNotifier {
   }
 
   List<Model_Trancaction> sortTypeTransactions(String type) {
-    final box = Hive.box<Model_Trancaction>('history');
-    return box.values.where((item) => item.type == type).toList();
+    return _historyBox.values.where((item) => item.type == type).toList();
   }
 
   List<Model_Trancaction> sortQuerySearchList(String query) {
-    final box = Hive.box<Model_Trancaction>('history');
-    if (query.isEmpty) return box.values.toList();
+    if (query.isEmpty) return _historyBox.values.toList();
 
-    return box.values
+    return _historyBox.values
         .where(
           (item) => item.comment.toLowerCase().contains(query.toLowerCase()),
         )

@@ -17,6 +17,9 @@ dependencies:
   fl_chart: ^0.66.0
   uuid: ^4.5.3
   cupertino_icons: ^1.0.8
+  flutter_bloc: ^8.1.0
+  flutter_secure_storage: ^9.0.0   # Для безопасного хранения PIN
+  local_auth: ^2.1.6               # Для отпечатка пальца
 
 dev_dependencies:
   flutter_test:

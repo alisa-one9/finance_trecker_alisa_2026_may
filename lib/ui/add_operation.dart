@@ -66,14 +66,11 @@ class _AddOperationState extends State<AddOperation> {
       return;
     }
     double finalTodayUsd = currencyProv.convertToUsd(enteredAmount);
-    if (sumProvider.real_totalBalance <= enteredAmount) {
-      _showSnackBar('Недостаточно средств для совершения транзакции!');
-      return;
-    } else {
-      newBalance =
-          sumProvider.real_totalBalance +
-          (_selectedType == 'income' ? enteredAmount : -enteredAmount);
-    }
+
+    newBalance =
+        sumProvider.real_totalBalance +
+        (_selectedType == 'income' ? enteredAmount : -enteredAmount);
+
     final transactionForList = Model_Trancaction(
       id: Uuid().v4(),
       type: _selectedType,
