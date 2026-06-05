@@ -17,7 +17,7 @@ class Model_category {
     redCategories.add(
       Model_category(
         name: 'Food',
-        icon: (const Icon(Icons.fastfood_outlined)),
+        icon: (const Icon(Icons.fastfood_outlined, color: Colors.black)),
         color: Colors.red,
         isSelected: false,
       ),
@@ -25,7 +25,10 @@ class Model_category {
     redCategories.add(
       Model_category(
         name: 'Transport',
-        icon: (const Icon(Icons.emoji_transportation_outlined)),
+        icon: (const Icon(
+          Icons.emoji_transportation_outlined,
+          color: Colors.black,
+        )),
         isSelected: false,
         color: Colors.red,
       ),
@@ -33,7 +36,7 @@ class Model_category {
     redCategories.add(
       Model_category(
         name: 'Hobby/Fun',
-        icon: (const Icon(Icons.sports_football_sharp)),
+        icon: (const Icon(Icons.sports_football_sharp, color: Colors.black)),
         isSelected: false,
         color: Colors.red,
       ),
@@ -47,7 +50,7 @@ class Model_category {
     greenCategories.add(
       Model_category(
         name: 'Salary',
-        icon: (const Icon(Icons.currency_bitcoin_sharp)),
+        icon: (const Icon(Icons.currency_bitcoin_sharp, color: Colors.black)),
         color: Colors.green,
         isSelected: false,
       ),
@@ -55,7 +58,7 @@ class Model_category {
     greenCategories.add(
       Model_category(
         name: 'Gift',
-        icon: (const Icon(Icons.card_giftcard_sharp)),
+        icon: (const Icon(Icons.card_giftcard_sharp, color: Colors.black)),
         isSelected: false,
         color: Colors.green,
       ),
@@ -63,7 +66,7 @@ class Model_category {
     greenCategories.add(
       Model_category(
         name: 'Bonus',
-        icon: (const Icon(Icons.star)),
+        icon: (const Icon(Icons.star, color: Colors.black)),
         isSelected: false,
         color: Colors.green,
       ),

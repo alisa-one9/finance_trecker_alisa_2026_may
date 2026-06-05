@@ -135,7 +135,16 @@ class _FiltersPageState extends State<FiltersPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: ChoiceChip(
-        label: Text(label),
+        label: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.indigo,
+          ),
+        ),
+        backgroundColor: Colors.white,
+
         selected: isSelected,
         onSelected: (selected_chip) {
           if (selected_chip) {
@@ -150,6 +159,13 @@ class _FiltersPageState extends State<FiltersPage> {
               }
             });
           }
+
+          if (label != 'Category') {
+            for (var c in all_categories) {
+              c.isSelected = false;
+            }
+            _name_category = '';
+          }
         },
       ),
     );
@@ -161,15 +177,18 @@ class _FiltersPageState extends State<FiltersPage> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: all_categories.length,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         separatorBuilder: (context, index) => const SizedBox(width: 20),
         itemBuilder: (context, index) {
           final item = all_categories[index];
           return GestureDetector(
             onTap: () {
               setState(() {
+                // Сбрасываем выбор у всех
                 for (var c in all_categories) {
                   c.isSelected = false;
                 }
+                // Выбираем текущую
                 item.isSelected = true;
                 _name_category = item.name;
               });
@@ -186,15 +205,19 @@ class _FiltersPageState extends State<FiltersPage> {
                         item.isSelected
                             ? item.color.withOpacity(0.4)
                             : Colors.white,
-                    border: Border.all(
-                      color: item.isSelected ? item.color : Colors.grey,
-                      width: item.isSelected ? 3 : 1,
-                    ),
+                    border: Border.all(color: item.color, width: 3),
                   ),
-                  child: item.icon,
+                  child: Center(child: item.icon),
                 ),
                 const SizedBox(height: 4),
-                Text(item.name, style: const TextStyle(fontSize: 12)),
+                Text(
+                  item.name,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight:
+                        item.isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
               ],
             ),
           );

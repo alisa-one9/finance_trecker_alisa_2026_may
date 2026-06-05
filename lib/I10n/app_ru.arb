@@ -1,0 +1,17 @@
+{
+  "helloWorld": "Привет, мир!",
+  "welcomeMessage": "Добро пожаловать в приложение",
+  "wallet": "Мой кошелек",
+  "balance": "Баланс",
+  "noTransactions": "Нет транзакций",
+  "navHome": "Главная",
+  "navFilters": "Фильтры",
+  "navStats": "Статистика",
+  "navHistory": "История",
+  "insufficientFunds": "Недостаточно средств для совершения транзакции!",
+  "usdCurrency": "Курс доллара:",
+  "fetchingCurrency": "Загрузка курса доллара...",
+  "available": "Доступно: ",
+  "expense": "Расход",
+  "income": "Доход"
+}

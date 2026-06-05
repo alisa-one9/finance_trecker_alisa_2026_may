@@ -1,11 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../reg_states/registr_state.dart';
+import 'registr_state.dart';
 
 class RegistrationCubit extends Cubit<RegistrState> {
   RegistrationCubit() : super(RegistrState());
   final _storage = const FlutterSecureStorage();
+
   void updateEmail(String email) => emit(state.copyWith(email: email));
 
   void addDigit(String digit) {

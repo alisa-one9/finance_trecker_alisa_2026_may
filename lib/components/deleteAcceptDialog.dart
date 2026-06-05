@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +30,7 @@ Future<void> deleteAcceptDialog({
               ),
             ),
             onPressed: () {
-              Navigator.of(dialogContext).pop();
+              context.pop();
             },
           ),
           TextButton(
@@ -43,7 +44,7 @@ Future<void> deleteAcceptDialog({
             onPressed: () async {
               await modelTrancaction.delete();
               Provider.of<LocalSumProvider>(context, listen: false).refresh();
-              Navigator.of(dialogContext).pop();
+              context.pop();
             },
           ),
         ],

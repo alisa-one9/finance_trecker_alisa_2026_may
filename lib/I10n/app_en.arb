@@ -1,0 +1,17 @@
+{
+  "helloWorld": "Hello World!",
+  "welcomeMessage": "Welcome to the app",
+  "wallet": "My Wallet",
+  "balance": "Balance",
+  "noTransactions": "No Transaction yet",
+  "navHome": "Home",
+  "navFilters": "Filters",
+  "navStats": "Stats",
+  "navHistory": "History",
+  "insufficientFunds": "Insufficient funds for this transaction!",
+  "usdCurrency": "USD currency:",
+  "fetchingCurrency": "Fetching currency..",
+  "available": "Available: ",
+  "expense": "Expense",
+  "income": "Income"
+}

@@ -49,7 +49,6 @@ class LocalSumProvider with ChangeNotifier {
 
   List<Model_Trancaction> sortQuerySearchList(String query) {
     if (query.isEmpty) return _historyBox.values.toList();
-
     return _historyBox.values
         .where(
           (item) => item.comment.toLowerCase().contains(query.toLowerCase()),

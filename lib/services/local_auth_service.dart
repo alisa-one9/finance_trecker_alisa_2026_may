@@ -4,7 +4,6 @@ import 'package:local_auth/local_auth.dart';
 class LocalAuthService {
   final _auth = LocalAuthentication();
   final _storage = const FlutterSecureStorage();
-
   Future<bool> authenticateWithBiometrics() async {
     try {
       return await _auth.authenticate(

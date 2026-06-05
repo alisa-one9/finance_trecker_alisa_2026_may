@@ -4,7 +4,6 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
-
 android {
     namespace = "com.example.finance_trecker_alisa"
     compileSdk = flutter.compileSdkVersion
@@ -16,7 +15,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.finance_trecker_alisa"
@@ -27,7 +25,6 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
-
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -36,7 +33,6 @@ android {
         }
     }
 }
-
 flutter {
     source = "../.."
 }
