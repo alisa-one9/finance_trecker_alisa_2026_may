@@ -2,8 +2,9 @@ import 'package:finance_trecker_alisa/components/myGradient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../enter_logic/enter_cubit/enter_auth_cubit.dart';
-import '../enter_logic/enter_states/enter_auth_state.dart';
+import '../auth/enter_cubit/enter_auth_cubit.dart';
+import '../auth/enter_states/enter_auth_state.dart';
+import '../session/app_session_cubit.dart';
 
 class CodEnterPage extends StatelessWidget {
   const CodEnterPage({super.key});
@@ -17,7 +18,8 @@ class CodEnterPage extends StatelessWidget {
         body: BlocConsumer<EnterAuthCubit, EnterAuthState>(
           listener: (context, state) {
             if (state.isSuccess) {
-              Navigator.pushReplacementNamed(context, '/');
+              // разблокируем сессию :
+              context.read<AppSessionCubit>().unlock();
             }
             if (state.isError) {
               ScaffoldMessenger.of(context).showSnackBar(

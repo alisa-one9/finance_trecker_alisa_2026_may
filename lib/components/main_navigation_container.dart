@@ -1,12 +1,12 @@
 import 'package:finance_trecker_alisa/components/myGradient.dart';
+import 'package:finance_trecker_alisa/ui/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../river_states/local_sum_provider.dart';
+import '../auth/enter_cubit/enter_auth_cubit.dart';
+import '../session/app_session_cubit.dart';
 import '../ui/filters_page.dart';
-import '../ui/history_page.dart';
 import '../ui/home_screen.dart';
-import '../ui/statistic_page.dart';
 
 class MainNavigationContainer extends StatefulWidget {
   const MainNavigationContainer({super.key});
@@ -19,9 +19,10 @@ class _MainNavigationContainerState extends State<MainNavigationContainer>
     with WidgetsBindingObserver {
   int _selectedIndex = 0;
   late List<Widget> _visualPages;
+
   @override
   void initState() {
-    _visualPages = [HomeSreen(), FiltersPage(), StatisticPage(), HistoryPage()];
+    _visualPages = [HomeSreen(), FiltersPage(), SettingsPage()];
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
@@ -41,9 +42,17 @@ class _MainNavigationContainerState extends State<MainNavigationContainer>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed) {
-      print("App Resumed - Refreshing Data");
-      Provider.of<LocalSumProvider>(context, listen: false).refresh();
+    final sessionCubit = context.read<AppSessionCubit>();
+    final authCubit = context.read<EnterAuthCubit>();
+
+    if (state == AppLifecycleState.paused) {
+      sessionCubit.recordBackgroundTime();
+
+      //СБРАСЫВАЕМ ВВЕДЕННЫЙ ПИН,
+      // чтобы при возврате from Resume  точки были пустые
+      authCubit.resetState();
+    } else if (state == AppLifecycleState.resumed) {
+      sessionCubit.checkLockTimeout();
     }
   }
 
@@ -75,13 +84,10 @@ class _MainNavigationContainerState extends State<MainNavigationContainer>
               icon: Icon(Icons.list_alt),
               label: 'Filters',
             ),
+
             BottomNavigationBarItem(
-              icon: Icon(Icons.pie_chart),
-              label: 'Stats',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.history),
-              label: 'History',
+              icon: Icon(Icons.settings),
+              label: 'Settings',
             ),
           ],
         ),

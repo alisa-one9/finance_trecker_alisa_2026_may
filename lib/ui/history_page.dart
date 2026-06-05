@@ -17,7 +17,6 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       body: Builder(
         builder: (context) {
           try {
@@ -61,6 +60,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.indigo,
                               ),
                             ),
                             const Divider(height: 10),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../components/myGradient.dart';
-import '../registration/reg_cubits/registration_cubit.dart';
-import '../registration/reg_states/registr_state.dart';
+import '../registration/registr_state.dart';
+import '../registration/registration_cubit.dart';
+import '../session/app_session_cubit.dart';
 
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({super.key});
@@ -93,17 +95,25 @@ class RegistrationPage extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    //Кнопка входа:
+                    //Кнопка сохранения PIN  а также входа:
                     ElevatedButton(
                       onPressed:
                           state.isValid && !state.isSubmitting
                               ? () async {
+                                // Сохраняем данные во внутреннем кубите (SecureStorage)
                                 bool ok =
                                     await context
                                         .read<RegistrationCubit>()
                                         .saveRegistration();
                                 if (ok) {
-                                  Navigator.pushReplacementNamed(context, '/');
+                                  // уведомляем ГЛОБАЛЬНЫЙ кубит сессии
+                                  // Это обновит состояние, которое проверяет GoRouter
+                                  context
+                                      .read<AppSessionCubit>()
+                                      .markRegistrationComplete();
+
+                                  //После этого заходим в приложение:
+                                  context.go('/main_navigation_container');
                                 }
                               }
                               : null,

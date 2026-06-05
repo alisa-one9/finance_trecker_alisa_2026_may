@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
-
   @override
   State<SplashPage> createState() => _SplashPageState();
 }
@@ -24,9 +24,9 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) return;
 
     if (savedPin == null) {
-      Navigator.pushReplacementNamed(context, '/register');
+      context.go('/register');
     } else {
-      Navigator.pushReplacementNamed(context, '/enter_code');
+      context.go('/code_enter_page');
     }
   }
 

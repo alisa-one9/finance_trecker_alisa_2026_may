@@ -44,10 +44,21 @@ class EnterAuthCubit extends Cubit<EnterAuthState> {
   void _verifyCode(String inputCode) async {
     String? savedPin = await _storage.read(key: 'user_pin');
     if (inputCode == savedPin) {
-      emit(state.copyWith(isSuccess: true));
+      emit(state.copyWith(isSuccess: true, isError: false));
     } else {
       emit(state.copyWith(isError: true, code: ''));
     }
+  }
+
+  void resetState() {
+    emit(
+      EnterAuthState(
+        code: '',
+        isSuccess: false,
+        isError: false,
+        isFirstRun: state.isFirstRun,
+      ),
+    );
   }
 
   // Вход по отпечатку
@@ -89,7 +100,8 @@ class EnterAuthCubit extends Cubit<EnterAuthState> {
           state.copyWith(
             isError: true,
             message:
-                'В настройках телефона не найден отпечаток пальца. Пожалуйста, настройте его в системе.',
+                'В настройках телефона не найден отпечаток пальца. '
+                'Пожалуйста, настройте его в системе.',
           ),
         );
       } else {

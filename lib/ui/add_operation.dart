@@ -13,7 +13,6 @@ import '../river_states/local_sum_provider.dart';
 
 class AddOperation extends StatefulWidget {
   const AddOperation({super.key});
-
   @override
   State<AddOperation> createState() => _AddOperationState();
 }
@@ -105,7 +104,10 @@ class _AddOperationState extends State<AddOperation> {
   Widget _buildFilterChip(String label, String type) {
     final bool isSelected = _selectedType == type;
     return ChoiceChip(
-      label: Text(label),
+      label: Text(
+        label,
+        style: const TextStyle(fontSize: 14, color: Colors.black),
+      ),
       selected: isSelected,
       selectedColor:
           type == 'income' ? Colors.green.shade100 : Colors.red.shade100,

@@ -1,33 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../models/model_transaction.dart';
+import 'category_icon.dart';
 
 class ItemTransaction extends StatelessWidget {
   final Model_Trancaction transaction;
 
   ItemTransaction({super.key, required this.transaction});
-
-  Widget _getCategoryIcon(String categoryName) {
-    switch (categoryName) {
-      case 'Food':
-        return const Icon(Icons.fastfood_outlined, color: Colors.red);
-      case 'Transport':
-        return const Icon(
-          Icons.emoji_transportation_outlined,
-          color: Colors.red,
-        );
-      case 'Hobby/Fun':
-        return const Icon(Icons.sports_football_sharp, color: Colors.red);
-      case 'Salary':
-        return const Icon(Icons.currency_bitcoin_sharp, color: Colors.green);
-      case 'Gift':
-        return const Icon(Icons.card_giftcard_sharp, color: Colors.green);
-      case 'Bonus':
-        return const Icon(Icons.star, color: Colors.green);
-      default:
-        return Container();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +16,10 @@ class ItemTransaction extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.transparent),
+      decoration: BoxDecoration(
+        color: Color(0xFFBDE1F4),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Row(
         children: [
           Container(
@@ -51,7 +33,7 @@ class ItemTransaction extends StatelessWidget {
                 width: 2,
               ),
             ),
-            child: _getCategoryIcon(transaction.category),
+            child: CategoryIcon(categoryName: transaction.category),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -60,7 +42,10 @@ class ItemTransaction extends StatelessWidget {
               children: [
                 Text(
                   "${isIncome ? '+' : '-'} ${transaction.amount} KGS",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -79,13 +64,17 @@ class ItemTransaction extends StatelessWidget {
                 ),
                 Text(
                   transaction.comment,
-                  style: const TextStyle(fontStyle: FontStyle.italic),
+                  style: const TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Colors.black,
+                  ),
                 ),
               ],
             ),
           ),
           Text(
             "${transaction.date.day}/${transaction.date.month.toString().padLeft(2, '0')}/${transaction.date.year}",
+            style: const TextStyle(fontSize: 12, color: Colors.black),
           ),
         ],
       ),

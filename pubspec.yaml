@@ -21,6 +21,11 @@ dependencies:
   flutter_secure_storage: ^9.0.0   # Для безопасного хранения PIN
   local_auth: ^2.1.6               # Для отпечатка пальца
 
+  go_router: ^14.0.0
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

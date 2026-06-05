@@ -1,4 +1,6 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +21,10 @@ class _HomeSreenState extends State<HomeSreen> {
   final Box<Model_Trancaction> transactionBox = Hive.box<Model_Trancaction>(
     'transactions',
   );
+  final Box<Model_Trancaction> historyBox = Hive.box<Model_Trancaction>(
+    'history',
+  );
+
   @override
   void initState() {
     super.initState();
@@ -37,10 +43,40 @@ class _HomeSreenState extends State<HomeSreen> {
     return total;
   }
 
+  Map<String, double> getIncomeData() {
+    Map<String, double> result = {};
+    for (var tx in historyBox.values) {
+      if (tx.type == 'income') {
+        result.update(
+          tx.category,
+          (value) => value + tx.amount,
+          ifAbsent: () => tx.amount,
+        );
+      }
+    }
+    return result;
+  }
+
+  Map<String, double> getExpenseData() {
+    Map<String, double> result = {};
+    for (var tx in historyBox.values) {
+      if (tx.type == 'outcome') {
+        result.update(
+          tx.category,
+          (value) => value + tx.amount,
+          ifAbsent: () => tx.amount,
+        );
+      }
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     final sumProvider = context.watch<LocalSumProvider>();
+    final currencyProvider = context.watch<CurrencyProvider>();
     final real_balance = sumProvider.real_totalBalance;
+    final usd_balance = currencyProvider.convertToUsd(real_balance);
 
     return ValueListenableBuilder(
       valueListenable: transactionBox.listenable(),
@@ -61,38 +97,156 @@ class _HomeSreenState extends State<HomeSreen> {
                     decoration: const BoxDecoration(gradient: myGradient),
                   ),
                 ),
+                iconTheme: const IconThemeData(color: Colors.white),
               ),
+
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text('Ваш  баланс:'),
-                      Text(
-                        "${real_balance.toStringAsFixed(2)} KGS",
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: myGradient,
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Column(
+                          children: [
+                            const Text(
+                              "TOTAL BALANCE",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "${real_balance.toStringAsFixed(2)} KGS",
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              "~~ ${usd_balance.toStringAsFixed(2)} USD",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.tealAccent,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const Divider(height: 10),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                context.push('/add_operation');
+                              },
+                              child: const Text("ADD"),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () {
+                                context.push('/history_page');
+                              },
+                              child: const Text("VIEW REPORTS"),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 25),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: 220,
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "Доходы",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    child: buildPieChart(getIncomeData(), [
+                                      Colors.green,
+                                      Colors.blue,
+                                      Colors.orange,
+                                      Colors.purple,
+                                    ]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Expanded(
+                            child: SizedBox(
+                              height: 220,
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "Расходы",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    child: buildPieChart(getExpenseData(), [
+                                      Colors.red,
+                                      Colors.orange,
+                                      Colors.pink,
+                                      Colors.brown,
+                                    ]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Последние операции",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
+
               if (transactions.isEmpty)
                 const SliverFillRemaining(
                   child: Center(child: Text("No transactions yet")),
                 )
               else
                 SliverList.builder(
-                  itemCount: transactions.length,
+                  itemCount: transactions.length > 5 ? 5 : transactions.length,
                   itemBuilder: (context, index) {
                     final tx = transactions[index];
                     return Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
+                        horizontal: 8.0,
                         vertical: 8.0,
                       ),
                       child: Material(
@@ -101,8 +255,9 @@ class _HomeSreenState extends State<HomeSreen> {
                         clipBehavior: Clip.antiAlias,
                         elevation: 1,
                         child: InkWell(
-                          splashColor: Colors.cyanAccent.withOpacity(0.1),
-                          highlightColor: Colors.cyanAccent.withOpacity(0.7),
+                          splashColor: Colors.deepPurple,
+                          highlightColor: Colors.redAccent,
+
                           onTap: () {
                             deleteAcceptDialog(
                               context: context,
@@ -119,31 +274,55 @@ class _HomeSreenState extends State<HomeSreen> {
               const SliverToBoxAdapter(child: SizedBox(height: 80)),
             ],
           ),
-          floatingActionButton: Container(
-            height: 60,
-            width: 60,
-            decoration: const BoxDecoration(
-              gradient: myGradient,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: FloatingActionButton(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              child: const Icon(Icons.add, color: Colors.white, size: 30),
-              onPressed: () {
-                Navigator.pushNamed(context, '/add_operation');
-              },
-            ),
-          ),
         );
       },
+    );
+  }
+
+  Widget buildPieChart(Map<String, double> data, List<Color> colors) {
+    if (data.isEmpty) {
+      return PieChart(
+        PieChartData(
+          centerSpaceRadius: 25,
+          sectionsSpace: 0,
+          sections: [
+            PieChartSectionData(
+              value: 1,
+              color: Colors.grey.shade300,
+              radius: 40,
+              title: '',
+            ),
+          ],
+        ),
+      );
+    }
+    double total = data.values.fold(0, (sum, item) => sum + item);
+    int colorIndex = 0;
+
+    return PieChart(
+      PieChartData(
+        centerSpaceRadius: 25,
+        sectionsSpace: 2,
+        sections:
+            data.entries.map((entry) {
+              final color = colors[colorIndex % colors.length];
+              colorIndex++;
+              double percentage = (entry.value / total) * 100;
+              return PieChartSectionData(
+                value: entry.value,
+                color: color,
+                radius: 60,
+                title: '${entry.key}\n${percentage.toStringAsFixed(0)}%',
+                titleStyle: const TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  shadows: [Shadow(color: Colors.black45, blurRadius: 2)],
+                ),
+                titlePositionPercentageOffset: 0.6,
+              );
+            }).toList(),
+      ),
     );
   }
 }
